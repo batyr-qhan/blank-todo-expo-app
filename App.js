@@ -1,7 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, StatusBar as RNStatusBar, FlatList, Button, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, TextInput, View, StatusBar as RNStatusBar, FlatList, Button, Alert, Platform, ImageBackground, Image, ScrollView } from 'react-native';
 import IOSButton from './components/IOSButton';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
+import { JosefinSans_400Regular } from '@expo-google-fonts/josefin-sans';
+
+import { EvilIcons } from '@expo/vector-icons';
 
 const generateId = () => `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -17,43 +22,55 @@ export default function App() {
     setInputValue("")
   }
 
+  const [loaded, error] = useFonts({
+    JosefinSans_400Regular
+  })
+
+  if (!loaded) {
+    return null
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+        <Image source={require("./assets/Background.png")} style={styles.backgroundImage} resizeMode="cover" />
+        
+        <View style={styles.scrollViewContainer}>
 
-      <TextInput style={styles.input} value={inputValue} onChangeText={v => {
-        console.log(v)
-        setInputValue(v)
-      }} />
+          <Text style={{ fontFamily: "JosefinSans_400Regular", ...styles.headerTitle }}>Todo</Text>
 
-      {
-        Platform.OS === "ios" ? <IOSButton title="IOS Button Create Todo" onPress={() => {
-          Alert.alert("ios button clicked")
-          handleAddTodo()
-        }} /> : <Button title='Create Todo' color="#841584" onPress={() => {
-          Alert.alert("android button clicked")
-          handleAddTodo()
-        }} />
-      }
+          <TextInput style={styles.input} value={inputValue} onChangeText={v => {
+            console.log(v)
+            setInputValue(v)
+          }} />
 
+          {
+            Platform.OS === "ios" ? <IOSButton title="IOS Button Create Todo" onPress={() => {
+              handleAddTodo()
+            }} /> : <Button title='Create Todo' onPress={() => {
+              handleAddTodo()
+            }} />
+          }
 
+          <FlatList
+            style={styles.listContainer}
+            data={todos}
+            renderItem={({ item }) => <Item title={item.title} />}
+            keyExtractor={item => item.id}
+          />
+        </View>
+        <StatusBar style="auto" />
+      </SafeAreaView>
+    </SafeAreaProvider >
 
-
-
-      <FlatList
-        data={todos}
-        renderItem={({ item }) => <Item title={item.title} />}
-        keyExtractor={item => item.id}
-      />
-
-      <StatusBar style="auto" />
-    </View>
   );
 }
 
 const Item = ({ title }) => (
   <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
+
+    <Text style={styles.itemTitle}>{title}</Text>
+    <EvilIcons name='close' size={32} />
   </View>
 );
 
@@ -62,25 +79,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: RNStatusBar.currentHeight || 0,
-    backgroundColor: 'green',
+    backgroundColor: '#e2e2e2',
     paddingTop: "20%",
-    padding: 16
-    // alignItems: 'center',
-    // justifyContent: 'center',
+
   },
   input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
+    height: 60,
+    marginVertical: 12,
+    paddingHorizontal: 10,
+    fontFamily: "JosefinSans_400Regular",
+    fontSize: 20,
+    backgroundColor: "#fff",
+    borderRadius: 5,
+
   },
   item: {
-    backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16,
+    // marginHorizontal: 16,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1
   },
-  title: {
-    fontSize: 32,
+  itemTitle: {
+    fontSize: 24,
+    fontFamily: "JosefinSans_400Regular",
+
   },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    backgroundColor: 'red'
+  },
+  imageWrapper: {
+    ...StyleSheet.absoluteFill,
+    width: "100%",
+    backgroundColor: 'red'
+  },
+  scrollViewContainer: {
+    flex: 1,
+    padding: 16
+  },
+  headerTitle: {
+    textTransform: "uppercase",
+    fontSize: 24,
+    color: "white",
+    fontWeight: 600,
+    letterSpacing: 8
+  },
+  listContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 5,
+  marginTop: 16
+  }
 });

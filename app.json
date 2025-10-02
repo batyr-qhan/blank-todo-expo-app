@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.nthroneo.myblankexpoapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,6 +30,9 @@
       "eas": {
         "projectId": "2bc4b830-5fe7-44dd-b3bf-1d676e91d7aa"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
